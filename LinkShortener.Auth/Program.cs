@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using LinkShortener.Auth.Common;
+using LinkShortener.DAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,6 +20,9 @@ services.AddCors(options =>
     });
 });
 
+services.AddScoped<AppDbContext>();
+
+services.AddApiVersioning();
 services.AddControllers();
 services.AddRouting();
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -39,8 +43,10 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 services.AddAuthorization();
 
 var app = builder.Build();
-Console.WriteLine(Environment.GetEnvironmentVariable("PGSQL_STRING"));
+
 app.UseAuthentication();
+app.UsePathBase(new PathString("/api/"));
+app.UseApiVersioning();
 app.UseRouting();
 app.UseAuthorization();
 
