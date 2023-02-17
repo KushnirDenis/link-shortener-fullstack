@@ -1,7 +1,8 @@
 namespace LinkShortener.Domain.Models;
 
-public class Link
+public class Link: BaseEntity
 {
+    public int Id { get; set; }
     public string InitialLink { get; set; }
     public string ShortLink { get; set; }
     public bool IsDeleted { get; set; }

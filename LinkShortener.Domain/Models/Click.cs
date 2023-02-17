@@ -1,6 +1,6 @@
 namespace LinkShortener.Domain.Models;
 
-public class Click
+public class Click : BaseEntity
 {
     public int Id { get; set; }
     public int LinkId { get; set; }

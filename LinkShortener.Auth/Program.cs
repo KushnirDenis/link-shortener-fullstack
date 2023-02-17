@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using FluentValidation;
 using LinkShortener.Auth.Common;
+using LinkShortener.Auth.Models;
 using LinkShortener.DAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -21,6 +23,7 @@ services.AddCors(options =>
 });
 
 services.AddScoped<AppDbContext>();
+services.AddScoped<IValidator<RegisterDto>, RegisterDtoValidator>();
 
 services.AddApiVersioning();
 services.AddControllers();
