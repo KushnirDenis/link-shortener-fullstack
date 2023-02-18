@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.Domain", "Lin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.DAL", "LinkShortener.DAL\LinkShortener.DAL.csproj", "{FEACF8D0-FDB0-4AA0-AF71-A34600F554BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener", "LinkShortener\LinkShortener.csproj", "{06266B19-2E92-4C4D-BB63-7E93C67EA471}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{FEACF8D0-FDB0-4AA0-AF71-A34600F554BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEACF8D0-FDB0-4AA0-AF71-A34600F554BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEACF8D0-FDB0-4AA0-AF71-A34600F554BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06266B19-2E92-4C4D-BB63-7E93C67EA471}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06266B19-2E92-4C4D-BB63-7E93C67EA471}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06266B19-2E92-4C4D-BB63-7E93C67EA471}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06266B19-2E92-4C4D-BB63-7E93C67EA471}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
