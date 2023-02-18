@@ -23,7 +23,7 @@ services.AddCors(options =>
 });
 
 services.AddScoped<AppDbContext>();
-services.AddScoped<IValidator<RegisterDto>, RegisterDtoValidator>();
+services.AddScoped<IValidator<UserAuthDto>, RegisterDtoValidator>();
 
 services.AddApiVersioning();
 services.AddControllers();

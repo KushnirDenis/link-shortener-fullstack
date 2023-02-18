@@ -19,11 +19,11 @@ public class AuthController : ControllerBase
 {
     private readonly JwtOptions _jwt;
     private readonly AppDbContext _db;
-    private readonly IValidator<RegisterDto> _registerValidator;
+    private readonly IValidator<UserAuthDto> _registerValidator;
 
-    public AuthController(IConfiguration configuration, 
+    public AuthController(IConfiguration configuration,
         AppDbContext db,
-        IValidator<RegisterDto> registerValidator)
+        IValidator<UserAuthDto> registerValidator)
     {
         _jwt = configuration.GetSection("JwtOptions").Get<JwtOptions>();
         _registerValidator = registerValidator;
@@ -37,30 +37,30 @@ public class AuthController : ControllerBase
             audience: _jwt.Audience,
             claims: new Claim[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(),ClaimValueTypes.Integer32),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(), ClaimValueTypes.Integer32),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email)
             },
             expires: DateTime.Now.AddMinutes(_jwt.Lifetime),
-            signingCredentials: new SigningCredentials(_jwt.GetSymmetricSecurityKey(), 
+            signingCredentials: new SigningCredentials(_jwt.GetSymmetricSecurityKey(),
                 SecurityAlgorithms.HmacSha256Signature)
-            );
+        );
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        
+
         return tokenHandler.WriteToken(securityToken);
     }
-    
+
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] RegisterDto registerUser)
+    public async Task<IActionResult> Register([FromBody] UserAuthDto userAuth)
     {
-        var validationResult = await _registerValidator.ValidateAsync(registerUser);
+        var validationResult = await _registerValidator.ValidateAsync(userAuth);
         if (!validationResult.IsValid)
             return BadRequest(new
             {
                 message = validationResult.Errors.Select(e => e.ErrorMessage)
             });
 
-        var dbUser = await _db.Users.FirstOrDefaultAsync(u => u.Email == registerUser.Email);
+        var dbUser = await _db.Users.FirstOrDefaultAsync(u => u.Email == userAuth.Email);
 
         if (dbUser != null)
             return BadRequest(new
@@ -68,25 +68,50 @@ public class AuthController : ControllerBase
                 message = "Пользователь с такой почтой уже существует"
             });
 
-        var newUser = await _db.Users.AddAsync(new User()
+        var newUser = new User()
         {
-            Email = registerUser.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerUser.Password)
-        });
-        
+            Email = userAuth.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(userAuth.Password)
+        };
+
+        await _db.Users.AddAsync(newUser);
         await _db.SaveChangesAsync();
 
         return Created("", new
         {
-            id = newUser.Entity.Id,
-            jwt_token = GenerateJwt(newUser.Entity)
+            id = newUser.Id,
+            jwt_token = GenerateJwt(newUser)
         });
     }
-    
-    // public JsonResult Login()
-    // {
-    //     
-    // }
-    //
 
+    [HttpPost]
+    public async Task<IActionResult> Login([FromBody] UserAuthDto userAuth)
+    {
+        var validationResult = await _registerValidator.ValidateAsync(userAuth);
+        if (!validationResult.IsValid)
+            return BadRequest(new
+            {
+                message = validationResult.Errors.Select(e => e.ErrorMessage)
+            });
+
+        var dbUser = await _db.Users.FirstOrDefaultAsync(u => u.Email == userAuth.Email);
+
+        if (dbUser == null)
+            return BadRequest(new
+            {
+                message = "Неверный логин или пароль"
+            });
+
+        if (!BCrypt.Net.BCrypt.Verify(userAuth.Password, dbUser.PasswordHash))
+            return BadRequest(new
+            {
+                message = "Неверный логин или пароль"
+            });
+
+        return Ok(new
+        {
+            id = dbUser.Id,
+            jwt_token = GenerateJwt(dbUser)
+        });
+    }
 }
