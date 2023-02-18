@@ -1,10 +1,14 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using FluentValidation;
 using LinkShortener.Auth.Common;
 using LinkShortener.Auth.Models;
 using LinkShortener.DAL;
 using LinkShortener.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LinkShortener.Auth.Controllers;
 
@@ -24,6 +28,26 @@ public class AuthController : ControllerBase
         _jwt = configuration.GetSection("JwtOptions").Get<JwtOptions>();
         _registerValidator = registerValidator;
         _db = db;
+    }
+
+    private string GenerateJwt(User user)
+    {
+        JwtSecurityToken securityToken = new JwtSecurityToken(
+            issuer: _jwt.Issuer,
+            audience: _jwt.Audience,
+            claims: new Claim[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString(),ClaimValueTypes.Integer32),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email)
+            },
+            expires: DateTime.Now.AddMinutes(_jwt.Lifetime),
+            signingCredentials: new SigningCredentials(_jwt.GetSymmetricSecurityKey(), 
+                SecurityAlgorithms.HmacSha256Signature)
+            );
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        
+        return tokenHandler.WriteToken(securityToken);
     }
     
     [HttpPost]
@@ -52,14 +76,13 @@ public class AuthController : ControllerBase
         
         await _db.SaveChangesAsync();
 
-
-
         return Created("", new
         {
-            id = newUser.Entity.Id
+            id = newUser.Entity.Id,
+            jwt_token = GenerateJwt(newUser.Entity)
         });
     }
-
+    
     // public JsonResult Login()
     // {
     //     
