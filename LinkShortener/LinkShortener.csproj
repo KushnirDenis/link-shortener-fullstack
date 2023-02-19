@@ -6,4 +6,16 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.14" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+      <PackageReference Include="Stravaig.ShortCode" Version="1.1.0" />
+      <PackageReference Include="Stravaig.ShortCode.DependencyInjection" Version="1.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LinkShortener.Auth\LinkShortener.Auth.csproj" />
+      <ProjectReference Include="..\LinkShortener.DAL\LinkShortener.DAL.csproj" />
+    </ItemGroup>
+
 </Project>
