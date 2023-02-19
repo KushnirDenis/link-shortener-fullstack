@@ -20,7 +20,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasAlternateKey(u => u.Email);
         modelBuilder.Entity<Link>()
-            .HasIndex(l => l.ShortLink)
+            .HasIndex(l => l.ShortCode)
             .IsUnique();
     }
 
