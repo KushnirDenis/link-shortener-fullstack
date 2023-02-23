@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using LinkShortener.DAL;
 using LinkShortener.Domain.Models;
@@ -37,10 +36,10 @@ public class LinksController : ControllerBase
         return await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
     }
 
-
+    // Create a new link
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> Links([FromBody] NewLinkDto newLink)
+    public async Task<IActionResult> CreateLink([FromBody] NewLinkDto newLink)
     {
         // TODO: Если найдена удалённая ссылка (IsDeleted), то не создавать новую ссылку, а сделать IsDeleted = false
         var user = await Authenticate();
@@ -88,26 +87,60 @@ public class LinksController : ControllerBase
         return Created($"/api/v{1}/links/{link.Id}", null);
     }
 
+    // Update a link
     [Authorize]
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Link([FromRoute] int id)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateLink([FromRoute] int id, [FromBody] NewLinkDto link)
     {
-        var link = await _db.Links.FirstOrDefaultAsync(l => l.Id == id
-                                                            && !l.IsDeleted);
+        var user = await Authenticate();
 
-        if (link == null)
+        if (user == null)
             return BadRequest(new
+            {
+                message = "Нет доступа"
+            });
+
+        var dbLink = await _db.Links.FirstOrDefaultAsync(l => l.Id == id &&
+                                                              !l.IsDeleted &&
+                                                              l.UserId == user.Id);
+
+        if (dbLink == null)
+            return NotFound(new
             {
                 message = "Ссылка не найдена"
             });
 
+        if (dbLink.InitialLink == link.Url)
+            return NoContent();
+
+        dbLink.InitialLink = link.Url;
+
+        await _db.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    // Delete a link
+    [Authorize]
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteLink([FromRoute] int id)
+    {
         var user = await Authenticate();
 
-        if (user == null ||
-            link.UserId != user.Id)
+        if (user == null)
             return BadRequest(new
             {
                 message = "Нет доступа"
+            });
+
+        var link = await _db.Links.FirstOrDefaultAsync(l => l.Id == id
+                                                            && !l.IsDeleted
+                                                            && l.UserId == user.Id);
+
+        if (link == null)
+            return NotFound(new
+            {
+                message = "Ссылка не найдена"
             });
 
         link.IsDeleted = true;
@@ -117,12 +150,13 @@ public class LinksController : ControllerBase
     }
 
 
+    // Get a link
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> Links([FromRoute] int id)
+    public async Task<IActionResult> GetLink([FromRoute] int id)
     {
         var link = await _db.Links
             .FirstOrDefaultAsync(l => l.Id == id &&
-                !l.IsDeleted);
+                                      !l.IsDeleted);
 
         if (link == null)
             return NotFound(new
@@ -135,5 +169,38 @@ public class LinksController : ControllerBase
             initialUrl = link.InitialLink,
             shortCode = link.ShortCode
         });
+    }
+
+    [Authorize]
+    [HttpGet("{linkId:int}/clicks")]
+    public async Task<IActionResult> GetClicks([FromRoute] int linkId)
+    {
+        var user = await Authenticate();
+
+        if (user == null)
+            return BadRequest(new
+            {
+                message = "Нет доступа"
+            });
+
+        var link = await _db.Links.FirstOrDefaultAsync(l => l.Id == linkId && l.UserId == user.Id);
+
+        if (link == null)
+            return NotFound(new
+            {
+                message = "Ссылка не найдена"
+            });
+
+
+        var clicks = await _db.Clicks.Where(c => c.LinkId == linkId)
+            .Select(c => ClickDto.MapFromClick(c)).ToListAsync();
+        
+        if (clicks.Count == 0)
+            return NotFound(new
+            {
+                message = "Никто не перешёл по ссылке :("
+            });
+
+        return Ok(clicks);
     }
 }
