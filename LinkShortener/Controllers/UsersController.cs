@@ -13,7 +13,7 @@ namespace LinkShortener.Controllers;
 [Route("/api/v{version:apiVersion}/[controller]")]
 public class UsersController : ControllerBase
 {
-    private AppDbContext _db;
+    private readonly AppDbContext _db;
     private const int _linksPerPage = 5;
 
     public UsersController(AppDbContext db)

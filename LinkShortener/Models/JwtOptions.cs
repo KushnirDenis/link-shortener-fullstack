@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace LinkShortener.Auth.Common;
+namespace LinkShortener.Models;
 
 public class JwtOptions
 {

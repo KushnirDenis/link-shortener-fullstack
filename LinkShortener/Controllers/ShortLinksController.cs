@@ -8,7 +8,7 @@ namespace LinkShortener.Controllers;
 [Route("/l/")]
 public class ShortLinksController : ControllerBase
 {
-    private AppDbContext _db;
+    private readonly AppDbContext _db;
 
     public ShortLinksController(AppDbContext db)
     {

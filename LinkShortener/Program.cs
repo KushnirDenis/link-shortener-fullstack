@@ -1,16 +1,12 @@
-using LinkShortener.Auth.Common;
 using LinkShortener.DAL;
+using LinkShortener.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Stravaig.ShortCode;
-using Stravaig.ShortCode.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var configuration = builder.Configuration;
 var services = builder.Services;
-
-var jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOptions>();
+var configuration = builder.Configuration;
 
 services.AddCors(options =>
 {
@@ -23,9 +19,12 @@ services.AddCors(options =>
 });
 
 services.AddScoped<AppDbContext>();
+services.AddScoped<UserAuthDtoValidator>();
 
 services.AddApiVersioning();
 services.AddControllers();
+
+var jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOptions>();
 
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -38,10 +37,12 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = false,
             ValidAudience = jwtOptions.Audience,
             ValidIssuer = jwtOptions.Issuer,
-            IssuerSigningKey = jwtOptions.GetSymmetricSecurityKey()
+            IssuerSigningKey = jwtOptions.GetSymmetricSecurityKey(),
+            
         };
     });
-services.AddAuthentication();
+
+services.AddAuthorization();
 
 var app = builder.Build();
 

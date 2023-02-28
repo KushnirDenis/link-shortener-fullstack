@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace LinkShortener.Auth.Models;
+namespace LinkShortener.Models;
 
 public class UserAuthDto
 {
@@ -8,9 +8,9 @@ public class UserAuthDto
     public string Password { get; set; }
 }
 
-public class RegisterDtoValidator : AbstractValidator<UserAuthDto>
+public class UserAuthDtoValidator : AbstractValidator<UserAuthDto>
 {
-    public RegisterDtoValidator()
+    public UserAuthDtoValidator()
     {
         RuleFor(x => x.Email)
             .EmailAddress()

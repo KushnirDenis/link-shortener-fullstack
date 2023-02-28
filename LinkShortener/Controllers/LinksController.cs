@@ -14,8 +14,8 @@ namespace LinkShortener.Controllers;
 [Route("/api/v{version:apiVersion}/[controller]/")]
 public class LinksController : ControllerBase
 {
-    private AppDbContext _db;
-
+    private readonly AppDbContext _db;
+    // TODO: links validator
     public LinksController(AppDbContext db)
     {
         _db = db;
