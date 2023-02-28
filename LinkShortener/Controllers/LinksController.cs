@@ -1,10 +1,12 @@
 using System.Security.Claims;
 using LinkShortener.DAL;
 using LinkShortener.Domain.Models;
+using LinkShortener.Localization;
 using LinkShortener.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Stravaig.ShortCode;
 
 namespace LinkShortener.Controllers;
@@ -15,10 +17,14 @@ namespace LinkShortener.Controllers;
 public class LinksController : ControllerBase
 {
     private readonly AppDbContext _db;
+
+    private readonly IStringLocalizer<ErrorMessages> _localizer;
     // TODO: links validator
-    public LinksController(AppDbContext db)
+    public LinksController(AppDbContext db,
+        IStringLocalizer<ErrorMessages> localizer)
     {
         _db = db;
+        _localizer = localizer;
     }
 
     private async Task<User?> Authenticate()
@@ -47,7 +53,7 @@ public class LinksController : ControllerBase
         if (user == null)
             return Unauthorized(new
             {
-                message = "Нет доступа"
+                message = _localizer["NoAccess"].Value
             });
 
         if (await _db.Links.AnyAsync(l => l.InitialLink == newLink.Url &&
@@ -56,7 +62,7 @@ public class LinksController : ControllerBase
         {
             return BadRequest(new
             {
-                message = "Вы уже сократили эту ссылку"
+                message = _localizer["AlreadyShortenedLink"].Value
             });
         }
 
@@ -97,7 +103,7 @@ public class LinksController : ControllerBase
         if (user == null)
             return BadRequest(new
             {
-                message = "Нет доступа"
+                message = _localizer["NoAccess"].Value
             });
 
         var dbLink = await _db.Links.FirstOrDefaultAsync(l => l.Id == id &&
@@ -107,7 +113,7 @@ public class LinksController : ControllerBase
         if (dbLink == null)
             return NotFound(new
             {
-                message = "Ссылка не найдена"
+                message = _localizer["LinkNotFound"].Value
             });
 
         if (dbLink.InitialLink == link.Url)
@@ -130,7 +136,7 @@ public class LinksController : ControllerBase
         if (user == null)
             return BadRequest(new
             {
-                message = "Нет доступа"
+                message = _localizer["NoAccess"].Value
             });
 
         var link = await _db.Links.FirstOrDefaultAsync(l => l.Id == id
@@ -140,7 +146,7 @@ public class LinksController : ControllerBase
         if (link == null)
             return NotFound(new
             {
-                message = "Ссылка не найдена"
+                message = _localizer["LinkNotFound"].Value
             });
 
         link.IsDeleted = true;
@@ -161,7 +167,7 @@ public class LinksController : ControllerBase
         if (link == null)
             return NotFound(new
             {
-                message = "Ссылка не найдена"
+                message = _localizer["LinkNotFound"].Value
             });
 
         return Ok(new
@@ -180,7 +186,7 @@ public class LinksController : ControllerBase
         if (user == null)
             return BadRequest(new
             {
-                message = "Нет доступа"
+                message = _localizer["NoAccess"].Value
             });
 
         var link = await _db.Links.FirstOrDefaultAsync(l => l.Id == linkId && l.UserId == user.Id);
@@ -188,7 +194,7 @@ public class LinksController : ControllerBase
         if (link == null)
             return NotFound(new
             {
-                message = "Ссылка не найдена"
+                message = _localizer["LinkNotFound"].Value
             });
 
 
@@ -198,7 +204,7 @@ public class LinksController : ControllerBase
         if (clicks.Count == 0)
             return NotFound(new
             {
-                message = "Никто не перешёл по ссылке :("
+                message = _localizer["NoClickedOnLink"].Value
             });
 
         return Ok(clicks);

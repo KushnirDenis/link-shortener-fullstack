@@ -2,9 +2,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using LinkShortener.DAL;
 using LinkShortener.Domain.Models;
+using LinkShortener.Localization;
 using LinkShortener.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 
 namespace LinkShortener.Controllers;
@@ -16,15 +18,18 @@ public class AuthController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly UserAuthDtoValidator _userDtoValidator;
+    private readonly IStringLocalizer<ErrorMessages> _localizer;
     private readonly JwtOptions _jwtOptions;
 
     public AuthController(IConfiguration configuration, 
         AppDbContext db, 
-        UserAuthDtoValidator userDtoValidator)
+        UserAuthDtoValidator userDtoValidator,
+        IStringLocalizer<ErrorMessages> localizer)
     {
         _db = db;
         _userDtoValidator = userDtoValidator;
         _jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOptions>();
+        _localizer = localizer;
     }
     
     private string GenerateJwt(User user)
@@ -62,13 +67,13 @@ public class AuthController : ControllerBase
         if (dbUser == null)
             return BadRequest(new
             {
-                message = "Неверный логин или пароль"
+                message = _localizer["IncorrectLoginOrPassword"].Value
             });
 
         if (!BCrypt.Net.BCrypt.Verify(userAuth.Password, dbUser.PasswordHash))
             return BadRequest(new
             {
-                message = "Неверный логин или пароль"
+                message = _localizer["IncorrectLoginOrPassword"].Value
             });
 
         return Ok(new
@@ -93,7 +98,7 @@ public class AuthController : ControllerBase
         if (dbUser != null)
             return BadRequest(new
             {
-                message = "Пользователь с такой почтой уже существует"
+                message = _localizer["UserAlreadyExists"].Value
             });
 
         var newUser = new User()

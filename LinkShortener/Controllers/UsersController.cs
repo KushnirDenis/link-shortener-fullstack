@@ -1,10 +1,12 @@
 using System.Security.Claims;
 using LinkShortener.DAL;
 using LinkShortener.Domain.Models;
+using LinkShortener.Localization;
 using LinkShortener.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace LinkShortener.Controllers;
 
@@ -14,11 +16,14 @@ namespace LinkShortener.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly IStringLocalizer<ErrorMessages> _localizer;
     private const int _linksPerPage = 5;
 
-    public UsersController(AppDbContext db)
+    public UsersController(AppDbContext db,
+        IStringLocalizer<ErrorMessages> localizer)
     {
         _db = db;
+        _localizer = localizer;
     }
 
     private async Task<User?> Authenticate()
@@ -51,7 +56,7 @@ public class UsersController : ControllerBase
         if (user == null || user.Id != userId)
             return BadRequest(new
             {
-                message = "Нет доступа"
+                message = _localizer["NoAccess"].Value
             });
 
         if (cursor == 1)
