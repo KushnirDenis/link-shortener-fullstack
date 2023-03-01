@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using LinkShortener.Domain.Models;
+﻿using LinkShortener.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LinkShortener.DAL;
