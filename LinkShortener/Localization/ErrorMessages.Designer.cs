@@ -92,5 +92,11 @@ namespace LinkShortener.Localization {
                 return ResourceManager.GetString("NoClickedOnLink", resourceCulture);
             }
         }
+        
+        internal static string InvalidLink {
+            get {
+                return ResourceManager.GetString("InvalidLink", resourceCulture);
+            }
+        }
     }
 }

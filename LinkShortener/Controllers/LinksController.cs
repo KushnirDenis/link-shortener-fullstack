@@ -3,6 +3,7 @@ using LinkShortener.DAL;
 using LinkShortener.Domain.Models;
 using LinkShortener.Localization;
 using LinkShortener.Models;
+using LinkShortener.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ public class LinksController : ControllerBase
     private readonly AppDbContext _db;
 
     private readonly IStringLocalizer<ErrorMessages> _localizer;
-    // TODO: links validator
+
     public LinksController(AppDbContext db,
         IStringLocalizer<ErrorMessages> localizer)
     {
@@ -56,6 +57,14 @@ public class LinksController : ControllerBase
                 message = _localizer["NoAccess"].Value
             });
 
+        if (!UriValidator.ValidateUri(newLink.Url))
+        {
+            return BadRequest(new
+            {
+                message = _localizer["InvalidLink"].Value
+            });
+        }
+
         if (await _db.Links.AnyAsync(l => l.InitialLink == newLink.Url &&
                                           !l.IsDeleted
                                           && l.UserId == user.Id))
@@ -68,7 +77,7 @@ public class LinksController : ControllerBase
 
 
         string? code = ShortCode.GenerateRandomShortCode();
-        ;
+
         Link? dbLink = await _db.Links.FirstOrDefaultAsync(l => l.ShortCode == code &&
                                                                 !l.IsDeleted);
 
@@ -105,6 +114,14 @@ public class LinksController : ControllerBase
             {
                 message = _localizer["NoAccess"].Value
             });
+        
+        if (!UriValidator.ValidateUri(link.Url))
+        {
+            return BadRequest(new
+            {
+                message = _localizer["InvalidLink"].Value
+            });
+        }
 
         var dbLink = await _db.Links.FirstOrDefaultAsync(l => l.Id == id &&
                                                               !l.IsDeleted &&
@@ -200,7 +217,7 @@ public class LinksController : ControllerBase
 
         var clicks = await _db.Clicks.Where(c => c.LinkId == linkId)
             .Select(c => ClickDto.MapFromClick(c)).ToListAsync();
-        
+
         if (clicks.Count == 0)
             return NotFound(new
             {

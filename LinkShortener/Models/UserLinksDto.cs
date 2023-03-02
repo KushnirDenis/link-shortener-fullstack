@@ -1,5 +1,3 @@
-using LinkShortener.Domain.Models;
-
 namespace LinkShortener.Models;
 
 public class UserLinksDto

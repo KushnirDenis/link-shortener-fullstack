@@ -1,4 +1,6 @@
 using FluentValidation;
+using LinkShortener.Localization;
+using Microsoft.Extensions.Localization;
 
 namespace LinkShortener.Models;
 
@@ -10,14 +12,14 @@ public class UserAuthDto
 
 public class UserAuthDtoValidator : AbstractValidator<UserAuthDto>
 {
-    public UserAuthDtoValidator()
+    public UserAuthDtoValidator(IStringLocalizer<ErrorMessages> localizer)
     {
         RuleFor(x => x.Email)
             .EmailAddress()
-            .WithMessage("Почта имеет неверный формат");
+            .WithMessage(localizer["WrongMailFormat"]);
 
         RuleFor(x => x.Password)
             .MinimumLength(6)
-            .WithMessage("Пароль не может быть короче шести символов");
+            .WithMessage(localizer["ShortPassword"]);
     }
 }

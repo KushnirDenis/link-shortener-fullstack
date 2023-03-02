@@ -42,4 +42,7 @@
     <data name="NoClickedOnLink" xml:space="preserve">
         <value>Никто не перешёл по ссылке :(</value>
     </data>
+    <data name="InvalidLink" xml:space="preserve">
+        <value>Неверная ссылка</value>
+    </data>
 </root>

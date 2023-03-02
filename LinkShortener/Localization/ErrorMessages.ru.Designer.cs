@@ -14,7 +14,7 @@ namespace LinkShortener.Localization {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class ErrorMessages_ru {
+    internal class ErrorMessages_ru {
         
         private static System.Resources.ResourceManager resourceMan;
         
@@ -90,6 +90,12 @@ namespace LinkShortener.Localization {
         internal static string NoClickedOnLink {
             get {
                 return ResourceManager.GetString("NoClickedOnLink", resourceCulture);
+            }
+        }
+        
+        internal static string InvalidLink {
+            get {
+                return ResourceManager.GetString("InvalidLink", resourceCulture);
             }
         }
     }

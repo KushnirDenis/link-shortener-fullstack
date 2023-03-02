@@ -1,10 +1,8 @@
 using System.Globalization;
-using System.Text;
 using LinkShortener.DAL;
 using LinkShortener.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Localization.Routing;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -66,6 +64,7 @@ var app = builder.Build();
 
 var localizationOptions = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
 
+app.UseCors();
 app.UseRequestLocalization(localizationOptions!.Value);
 app.UseAuthentication();
 app.UseRouting();
