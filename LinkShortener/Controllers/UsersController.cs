@@ -17,7 +17,7 @@ public class UsersController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly IStringLocalizer<ErrorMessages> _localizer;
-    private const int _linksPerPage = 5;
+    private const int _linksPerPage = 20;
 
     public UsersController(AppDbContext db,
         IStringLocalizer<ErrorMessages> localizer)

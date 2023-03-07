@@ -3,5 +3,12 @@
   "register": "Register",
   "email": "Email",
   "password": "Password",
-  "signInTo": "Sign in to"
+  "signInTo": "Sign in to",
+  "registerIn": "Sign up for",
+  "logout": "Logout",
+  "repeatPassword": "Repeat password",
+  "passwordsNotMatch": "The passwords do not match",
+  "addNew": "Add new",
+  "close": "Close",
+  "shortenLink": "Shorten the link"
 }

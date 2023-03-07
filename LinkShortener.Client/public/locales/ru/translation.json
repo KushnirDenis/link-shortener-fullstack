@@ -3,5 +3,12 @@
   "register": "Зарегистрироваться",
   "email": "Почта",
   "password": "Пароль",
-  "signInTo": "Войти в"
+  "signInTo": "Войти в",
+  "registerIn": "Зарегистрироваться в",
+  "logout": "Выйти",
+  "repeatPassword": "Повторите пароль",
+  "passwordsNotMatch": "Пароли не совпадают",
+  "addNew": "Добавить",
+  "close": "Закрыть",
+  "shortenLink": "Сократить ссылку"
 }

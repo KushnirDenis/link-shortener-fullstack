@@ -72,14 +72,14 @@ public class AuthController : ControllerBase
 
         if (!BCrypt.Net.BCrypt.Verify(userAuth.Password, dbUser.PasswordHash))
             return BadRequest(new
-            {
+          {
                 message = _localizer["IncorrectLoginOrPassword"].Value
             });
 
         return Ok(new
         {
             id = dbUser.Id,
-            jwt_token = GenerateJwt(dbUser)
+            jwtToken = GenerateJwt(dbUser)
         });
     }
 
@@ -113,7 +113,7 @@ public class AuthController : ControllerBase
         return Created("", new
         {
             id = newUser.Id,
-            jwt_token = GenerateJwt(newUser)
+            jwtToken = GenerateJwt(newUser)
         });
     }
 }

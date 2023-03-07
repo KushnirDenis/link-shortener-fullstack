@@ -99,7 +99,7 @@ public class LinksController : ControllerBase
         await _db.Links.AddAsync(link);
         await _db.SaveChangesAsync();
 
-        return Created($"/api/v{1}/links/{link.Id}", null);
+        return Created($"/api/v{1}/links/{link.Id}", LinkDto.MapFromLink(link));
     }
 
     // Update a link

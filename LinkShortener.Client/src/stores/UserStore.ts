@@ -1,27 +1,30 @@
 import {create} from 'zustand'
 import {devtools, persist} from "zustand/middleware";
 import User from "../models/User"
-import AuthDto from "../models/AuthDto";
 
 export interface IUserStore {
     user: User | null,
-    setAuth: (auth: AuthDto) => void
+    setUser: (user: User) => void,
+    logout: () => void
 }
 
-export const useUserStore = create<IUserStore>()
-devtools(
-    persist(
-        (set, getState) => ({
-            user: null,
-            setAuth: (auth: AuthDto) => set((state: IUserStore) => {
-                return {
-                    user: auth
-                }
+export const useUserStore = create<IUserStore>()(devtools(
+        persist(
+            (set) => ({
+                user: null,
+                setUser: (user) => set(
+                    {
+                        user: user
+                    }
+                ),
+                logout: () => set({
+                    user: null
+                })
             })
-
-        }),
-        {
-            name: "user-store"
-        }
+            ,
+            {
+                name: "user-store"
+            }
+        )
     )
 )
